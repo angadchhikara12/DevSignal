@@ -499,11 +499,10 @@ class DevSignal {
     }
 
     handleRoute() {
-        const path = window.location.pathname;
-        const userMatch = path.match(/^\/user\/([^\/]+)$/);
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('user');
         
-        if (userMatch && userMatch[1]) {
-            const username = decodeURIComponent(userMatch[1]);
+        if (username) {
             this.analyzeUserFromURL(username);
         } else {
             // Show default input view
@@ -520,7 +519,7 @@ class DevSignal {
     }
 
     updateURL(username) {
-        const newURL = `/user/${encodeURIComponent(username)}`;
+        const newURL = `/?user=${encodeURIComponent(username)}`;
         const state = { username };
         
         // Update browser URL without page reload
@@ -536,7 +535,8 @@ class DevSignal {
             this.displayResults(userData, analysis);
             
             // Update URL if not already set
-            if (!window.location.pathname.includes(`/user/${username}`)) {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('user') !== username) {
                 this.updateURL(username);
             }
         } catch (error) {
